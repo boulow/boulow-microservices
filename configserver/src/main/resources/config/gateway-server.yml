@@ -1,0 +1,35 @@
+server:
+  port: 8072
+  
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://eurekaserver:8070/eureka/
+      
+spring:
+  cloud:
+    gateway:
+      routes:
+      - id: user-service
+        uri: lb://user-service
+        predicates:
+        - Path=/user/**
+        filters:
+        - RewritePath=/user/(?<path>.*), /$\{path}
+        
+      - id: tribe-service
+        uri: lb://tribe-service
+        predicates:
+        - Path=/tribe/**
+        filters:
+        - RewritePath=/tribe/(?<path>.*), /$\{path}
+        
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
