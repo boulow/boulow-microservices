@@ -3,3 +3,4 @@ user.update.message = User %s updated
 user.delete.message = Deleting user with id %s
 user.absent = User with id %s not found
 user.invalid.argument = Invalid argument
+user.unauthorized.operation= This action is not authorized or a problem was encountered during its execution
