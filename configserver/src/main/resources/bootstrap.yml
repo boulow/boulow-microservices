@@ -8,7 +8,10 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/yguiathe/boulow-config.git
-
+          uri: https://github.com/yguiathe/boulow-config/
+          default-label: main
+          clone-on-start: true
+          skip-ssl-validation: true
+          
 server:
   port: 8071
