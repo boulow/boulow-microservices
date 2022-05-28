@@ -20,5 +20,6 @@ public class AddressDto {
     private AddressType type;
     private String country;
     private Long id;
-    private AppUser appUser;
+    private AppUser user;
+
 }

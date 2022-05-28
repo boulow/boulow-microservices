@@ -19,14 +19,14 @@ spring:
         predicates:
         - Path=/user/**
         filters:
-        - RewritePath=/user/(?<path>.*), /$\{path}
+        - RewritePath=/user/(?<path>.*), /v1/user/$\{path}
         
       - id: tribe-service
         uri: lb://tribe-service
         predicates:
         - Path=/tribe/**
         filters:
-        - RewritePath=/tribe/(?<path>.*), /$\{path}
+        - RewritePath=/tribe/(?<path>.*), /v1/tribe/$\{path}
         
 management:
   endpoints:

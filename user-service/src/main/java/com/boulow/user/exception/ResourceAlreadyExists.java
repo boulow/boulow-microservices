@@ -1,13 +1,13 @@
 package com.boulow.user.exception;
 
-public class NoSuchElementFoundException extends RuntimeException {
+public class ResourceAlreadyExists extends RuntimeException {
 
     /**
 	 * 
 	 */
 	private static final long serialVersionUID = 9211233610817185036L;
 
-	public NoSuchElementFoundException(String message){
+	public ResourceAlreadyExists(String message){
         super(message);
     }
 }
