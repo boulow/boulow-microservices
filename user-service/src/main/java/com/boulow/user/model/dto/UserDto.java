@@ -28,5 +28,7 @@ public class UserDto {
     private Date dob;
     private List<Address> addresses;
     private String phone;
+    private String uid;
+    private String issuer;
 
 }

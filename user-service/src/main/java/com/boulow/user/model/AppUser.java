@@ -3,10 +3,9 @@ package com.boulow.user.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -21,6 +20,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import javax.validation.constraints.Email;
@@ -32,8 +34,10 @@ import org.hibernate.annotations.Nationalized;
 /**
  * A user.
  */
-@Getter @Setter @ToString
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 public class AppUser {
 
 	@Id
@@ -72,6 +76,13 @@ public class AppUser {
     @Size(max = 256)
     @JsonProperty
     private String avatarUrl;
+    
+    private boolean isEmailVerified = false;
+	
+    @Size(max = 50)
+    private String issuer;
+    
+    private String uid;
 
     @JsonIgnore
     @Transient
@@ -99,5 +110,21 @@ public class AppUser {
 	        fetch = FetchType.LAZY
 	    )
     private List<Address> addresses = new ArrayList<>();
+    
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(name = "user_roles",
+        joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+    private Set<AppRole> roles;
+    
+    public void addAddress(Address address) {
+    	addresses.add(address);
+    	address.setUser(this);
+    }
+ 
+    public void removeAddress(Address address) {
+    	addresses.remove(address);
+    	address.setUser(null);
+    }
 
 }

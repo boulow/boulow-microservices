@@ -9,10 +9,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserSlimDto {
 
-    private Long id;
+	private Long id;
     private String email;
-    private String username;
+    private String bio;
+    private String avatarUrl;
     private boolean isActive;
     private String firstName;
     private String lastName;
+    private String langKey;
+    
 }

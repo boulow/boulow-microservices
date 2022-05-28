@@ -5,19 +5,22 @@ import org.springframework.stereotype.Repository;
 
 import com.boulow.user.model.AppUser;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface UserRepository extends CrudRepository<AppUser, Long> {
 
-    Optional<AppUser> findByEmail(String email);
-    
-    Optional<AppUser> findByUsername(String username);
+	Optional<AppUser> findByUsername(String username);
 
-    Iterable<AppUser> findByFirstNameContainingIgnoreCase(String firstName);
+	Optional<AppUser> findByEmail(String email);
 
-    Iterable<AppUser> findByLastNameContainingIgnoreCase(String lastName);
+	List<AppUser> findByFirstNameContainingIgnoreCase(String firstname);
 
-    Optional<AppUser> findByPhone(String phone);
+	List<AppUser> findByLastNameContainingIgnoreCase(String lastname);
+
+	List<AppUser> findByIsActiveTrue();
+
+	Boolean existsByUsername(String username);
 
 }
