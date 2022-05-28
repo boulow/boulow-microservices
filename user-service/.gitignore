@@ -33,3 +33,4 @@ build/
 .vscode/
 
 .DS_Store
+!**/src/main/resources/firebase_config.json
