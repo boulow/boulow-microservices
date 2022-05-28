@@ -3,15 +3,14 @@ spring:
     name: config-server
   profiles:
     active:
-    - native, git
+    - git
   cloud:
     config:
       server:
-        native:
-          search-locations: classpath:/config
         git:
           uri: https://github.com/boulow/boulow-microservices.git
-          searchPaths: app-properties
+          search-paths:
+          - backendProps
     
 server:
   port: 8071
