@@ -8,9 +8,7 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/boulow/boulow-microservices.git
-          search-paths:
-          - backendProps
-    
+          uri: https://github.com/yguiathe/boulow-config.git
+
 server:
   port: 8071
