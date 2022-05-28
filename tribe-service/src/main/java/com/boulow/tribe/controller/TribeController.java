@@ -2,6 +2,7 @@ package com.boulow.tribe.controller;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,10 +36,10 @@ public class TribeController {
 
 	@Autowired
 	private TribeMapper tribeMapper;
-	
+
 	@Autowired
 	private MemberMapper memberMapper;
-	
+
 	static final Logger logger = LoggerFactory.getLogger(TribeController.class);
 
 	@GetMapping(value = "/")
@@ -49,9 +50,10 @@ public class TribeController {
 	}
 
 	@GetMapping(value = "/memberships/{userId}")
-	public ResponseEntity<List<Tribe>> getMyTribes(@PathVariable("userId") Long userId,
+	public ResponseEntity<List<TribeDto>> getMyTribes(@PathVariable("userId") Long userId,
 			@RequestHeader(value = "Accept-Language", required = false) Locale locale) {
-		List<Tribe> tribesList = tribeService.findMyTribes(userId, locale);
+		List<TribeDto> tribesList = tribeService.findMyTribes(userId, locale).stream()
+				.map(tribe -> tribeMapper.convertToDto(tribe)).collect(Collectors.toList());
 		return ResponseEntity.ok(tribesList);
 	}
 
@@ -68,19 +70,18 @@ public class TribeController {
 		return ResponseEntity.ok(tribeMapper.convertToDto(
 				tribeService.create(tribeMapper.convertFromDto(tribeDto), Long.valueOf(tribeDto.getUserId()), locale)));
 	}
-	
+
 	@PostMapping(value = "/leave")
 	public ResponseEntity<String> leaveTribe(@RequestBody MembershipDto membershipDto,
 			@RequestHeader(value = "Accept-Language", required = false) Locale locale) {
-		return ResponseEntity.ok(
-				tribeService.leave(membershipDto.getUserId(), membershipDto.getTribeId(), locale));
+		return ResponseEntity.ok(tribeService.leave(membershipDto.getUserId(), membershipDto.getTribeId(), locale));
 	}
-	
+
 	@PostMapping(value = "/join")
 	public ResponseEntity<MemberDto> joinTribe(@RequestBody MembershipDto membershipDto,
 			@RequestHeader(value = "Accept-Language", required = false) Locale locale) {
-		return ResponseEntity.ok(
-				memberMapper.convertToDto(tribeService.join(membershipDto.getUserId(), membershipDto.getTribeId(), locale)));
+		return ResponseEntity.ok(memberMapper
+				.convertToDto(tribeService.join(membershipDto.getUserId(), membershipDto.getTribeId(), locale)));
 	}
 
 	@DeleteMapping(value = "/{tribeId}")

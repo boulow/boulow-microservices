@@ -34,7 +34,7 @@ public class Member {
     
     @JsonProperty
 	@Enumerated(EnumType.ORDINAL)
-    private MembershipStatus status = MembershipStatus.ACTIVE;
+    private MembershipStatus status = MembershipStatus.PENDING;
 	
 	@JsonProperty
 	@Enumerated(EnumType.ORDINAL)

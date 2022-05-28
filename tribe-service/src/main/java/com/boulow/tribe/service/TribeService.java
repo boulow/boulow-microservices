@@ -18,6 +18,7 @@ import com.boulow.tribe.model.dto.UserSlimDto;
 import com.boulow.tribe.repository.MemberRepository;
 import com.boulow.tribe.repository.TribeRepository;
 import com.boulow.tribe.service.client.UserFeignClient;
+import com.boulow.tribe.utils.UserContextHolder;
 
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.bulkhead.annotation.Bulkhead.Type;
@@ -148,6 +149,6 @@ public class TribeService {
 	@Bulkhead(name = "bulkheadUserService", type = Type.THREADPOOL)
 	@Retry(name = "retryUserService")
 	public UserSlimDto callUserFeignClient(Long userId) {
-		return userFeignClient.getUser(userId);
+		return userFeignClient.getUser(userId, UserContextHolder.getContext().getAuthToken());
 	}
 }

@@ -29,6 +29,9 @@ public class TrackingFilter implements GlobalFilter {
 					filterUtils.getCorrelationId(requestHeaders));
 		} else {
 			String correlationID = generateCorrelationId();
+			String token = filterUtils.getAuthToken(requestHeaders);
+			if(token != null)
+				exchange = filterUtils.setAuthToken(exchange, token);
 			exchange = filterUtils.setCorrelationId(exchange, correlationID);
 			logger.debug("tmx-correlation-id generated in tracking filter: {}.", correlationID);
 		}
