@@ -26,6 +26,6 @@ public class UserUpdateDto {
     private LocalDate dob;
     private String langKey;
     private MultipartFile avatar;
-    private String uid;
+    private Long id;
     private List<Address> address;
 }
