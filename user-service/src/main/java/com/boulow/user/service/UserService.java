@@ -12,14 +12,14 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.boulow.user.events.DocUploadPubService;
-import com.boulow.user.events.model.Document;
-import com.boulow.user.events.model.DocumentType;
+import com.boulow.user.events.Document;
+import com.boulow.user.events.DocumentType;
 import com.boulow.user.exception.CustomException;
 import com.boulow.user.exception.UnauthorizedException;
 import com.boulow.user.model.AppUser;
 import com.boulow.user.model.dto.UserUpdateDto;
 import com.boulow.user.repository.UserRepository;
+import com.boulow.user.security.utils.UserContext;
 
 @Service("userService")
 @Transactional
@@ -90,6 +90,7 @@ public class UserService {
 				avatar.setUserId(toUser.getId());
 				avatar.setType(DocumentType.AVATAR);
 				avatar.setName(toUser.getAvatar().getOriginalFilename());
+				avatar.setCorrelationId(UserContext.getCorrelationId());
 				pubService.uploadAvatar(avatar);
 			}
 			

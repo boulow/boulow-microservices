@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: account-service
+  profiles:
+    active: ${PROFILE:default}
+  cloud:
+    config:
+      uri: http://configserver:8071
+
+resilience4j.circuitbreaker:
+  instances:
+    tribeService:
+      registerHealthIndicator: true
+      ringBufferSizeInClosedState: 5
+      ringBufferSizeInHalfOpenState: 3
+      waitDurationInOpenState: 10s
+      failureRateThreshold: 50
+      recordExceptions:
+        - org.springframework.web.client.HttpServerErrorException
+        - java.io.IOException
+        - java.util.concurrent.TimeoutException
+        - org.springframework.web.client.ResourceAccessException
+
+resilience4j.thread-pool-bulkhead:
+  instances:
+    bulkheadTribeService:
+      maxThreadPoolSize: 1
+      coreThreadPoolSize: 1
+      queueCapacity: 1
+      keepAliveDuration: 20ms
+
+resilience4j.retry:
+  instances:
+    retryTribeService:
+      max-attempts: 5
+      waitDuration: 10000
+      retry-exceptions:
+        - java.util.concurrent.TimeoutException
