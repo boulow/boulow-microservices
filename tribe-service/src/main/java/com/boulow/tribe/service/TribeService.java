@@ -17,14 +17,16 @@ import com.boulow.tribe.model.Tribe;
 import com.boulow.tribe.model.dto.UserSlimDto;
 import com.boulow.tribe.repository.MemberRepository;
 import com.boulow.tribe.repository.TribeRepository;
+import com.boulow.tribe.security.utils.UserContext;
+import com.boulow.tribe.security.utils.UserContextHolder;
 import com.boulow.tribe.service.client.UserFeignClient;
-import com.boulow.tribe.utils.UserContextHolder;
 
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.bulkhead.annotation.Bulkhead.Type;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 
+import com.boulow.tribe.event.TribeEvent;
 import com.boulow.tribe.exception.InvalidArgumentException;
 import com.boulow.tribe.exception.NoSuchElementFoundException;
 
@@ -45,11 +47,18 @@ public class TribeService {
 	
 	@Autowired
 	private UserFeignClient userFeignClient;
+	
+	@Autowired
+	private TribeEventsPublisher eventPublisher;
 
 	public Tribe findById(Long tribeId, Locale locale) {
 		Tribe tribe = tribeRepository.findById(tribeId).orElseThrow(() -> new NoSuchElementFoundException(
 				String.format(messages.getMessage("tribe.absent", null, locale), tribeId)));
 		return tribe;
+	}
+	
+	public boolean exists(Long tribeId) {
+		return tribeRepository.existsById(tribeId);
 	}
 
 	public List<Tribe> findAll(Locale locale) {
@@ -112,7 +121,8 @@ public class TribeService {
 		if (tribe == null || userId == null)
 			throw new InvalidArgumentException(messages.getMessage("tribe.invalid.argument", null, locale));
 
-		// TODO Add userId validation via WebService call with Feign/RestTemplate
+		if(callUserFeignClient(userId) == null)
+			throw new IllegalArgumentException("User doesn't exist");
 
 		// Creating Admin Member
 		Member member = new Member();
@@ -121,9 +131,18 @@ public class TribeService {
 
 		// Adding Default Member(admin) to Tribe
 		tribe.addMember(member);
-
+		
 		// Persisting tribe
-		return tribeRepository.save(tribe);
+		tribe = tribeRepository.save(tribe);
+		
+		// Publish new tribe event for account creation
+		TribeEvent event = new TribeEvent();
+		event.setCorrelationId(UserContext.getCorrelationId());
+		event.setTribeId(tribe.getId());
+		event.setMembershipId(tribe.getMembers().get(0).getId());
+		eventPublisher.publishNewTribeEvent(event);
+
+		return tribe;
 	}
 
 	public Tribe update(Tribe tribe, Locale locale) {
@@ -149,6 +168,7 @@ public class TribeService {
 	@Bulkhead(name = "bulkheadUserService", type = Type.THREADPOOL)
 	@Retry(name = "retryUserService")
 	public UserSlimDto callUserFeignClient(Long userId) {
-		return userFeignClient.getUser(userId, UserContextHolder.getContext().getAuthToken());
+		UserContextHolder.getContext();
+		return userFeignClient.getUser(userId, UserContext.getAuthToken());
 	}
 }

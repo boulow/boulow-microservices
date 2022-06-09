@@ -11,8 +11,6 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends CrudRepository<AppUser, Long> {
 
-	Optional<AppUser> findByUsername(String username);
-
 	Optional<AppUser> findByEmail(String email);
 
 	List<AppUser> findByFirstNameContainingIgnoreCase(String firstname);
@@ -20,7 +18,5 @@ public interface UserRepository extends CrudRepository<AppUser, Long> {
 	List<AppUser> findByLastNameContainingIgnoreCase(String lastname);
 
 	List<AppUser> findByIsActiveTrue();
-
-	Boolean existsByUsername(String username);
 
 }
