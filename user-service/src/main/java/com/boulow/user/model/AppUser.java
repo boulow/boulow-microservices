@@ -45,11 +45,6 @@ public class AppUser {
 	@JsonProperty
     private Long id;
 
-    @NotNull
-    @Size(min = 1, max = 50)
-    @JsonProperty
-    private String username;
-
     @Size(max = 50)
     @JsonProperty
     @Nationalized

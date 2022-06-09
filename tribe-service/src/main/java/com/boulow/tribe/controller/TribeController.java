@@ -89,4 +89,9 @@ public class TribeController {
 			@RequestHeader(value = "Accept-Language", required = false) Locale locale) {
 		return ResponseEntity.ok(tribeService.delete(tribeId, locale));
 	}
+	
+	@GetMapping(value = "/exists/{tribeId}")
+	public ResponseEntity<Boolean> tribeExists(@PathVariable("tribeId") Long tribeId) {
+		return ResponseEntity.ok(tribeService.exists(tribeId));
+	}
 }

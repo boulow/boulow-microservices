@@ -19,6 +19,45 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  zookeeper:
+    image: wurstmeister/zookeeper:latest
+    ports:
+      - 2181:2181
+    networks:
+      backend:
+        aliases:
+          - "zookeeper"
+  kafkaserver:
+    image: wurstmeister/kafka:latest
+    ports:
+      - 9092:9092
+    environment:
+      - KAFKA_ADVERTISED_HOST_NAME=kafka
+      - KAFKA_ADVERTISED_PORT=9092
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_CREATE_TOPICS=testQ:1:1
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    depends_on:
+      - zookeeper
+    restart: always
+    networks:
+      backend:
+        aliases:
+          - "kafka"
+  kafdrop:
+    image: obsidiandynamics/kafdrop:latest
+    ports:
+      - "9000:9000"
+    environment:
+      - KAFKA_BROKERCONNECT=kafka:9092
+    depends_on:
+      kafkaserver:
+        condition: service_started
+    networks:
+      backend:
+        aliases:
+          - "kafdrop"
   configserver:
     image: boulow/configserver:0.0.1-SNAPSHOT
     ports:
@@ -76,6 +115,8 @@ services:
         condition: service_healthy
       configserver:
         condition: service_started
+      kafkaserver:
+        condition: service_started
     networks:
       - backend
   userservice:
@@ -92,9 +133,29 @@ services:
         condition: service_healthy
       configserver:
         condition: service_started
+      kafkaserver:
+        condition: service_started
     networks:
       - backend
-          
+  accountservice:
+    image: boulow/account-service:0.0.1-SNAPSHOT
+    ports:
+      - "8084:8084"
+    environment:
+      PROFILE: "dev"
+      SPRING_CLOUD_CONFIG_URI: "http://configserver:8071"
+      CONFIGSERVER_PORT:   "8071"
+      DATABASESERVER_PORT: "5432"
+    depends_on:
+      database:
+        condition: service_healthy
+      configserver:
+        condition: service_started
+      kafkaserver:
+        condition: service_started
+    networks:
+      - backend
+             
 networks:
   backend:
     driver: bridge
