@@ -28,6 +28,7 @@
     <module>gatewayserver</module>
     <module>tribe-service</module>
     <module>user-service</module>
+    <module>account-service</module>
   </modules>
   <build>
     <plugins>

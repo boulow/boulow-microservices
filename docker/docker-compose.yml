@@ -137,7 +137,25 @@ services:
         condition: service_started
     networks:
       - backend
-          
+  accountservice:
+    image: boulow/account-service:0.0.1-SNAPSHOT
+    ports:
+      - "8084:8084"
+    environment:
+      PROFILE: "dev"
+      SPRING_CLOUD_CONFIG_URI: "http://configserver:8071"
+      CONFIGSERVER_PORT:   "8071"
+      DATABASESERVER_PORT: "5432"
+    depends_on:
+      database:
+        condition: service_healthy
+      configserver:
+        condition: service_started
+      kafkaserver:
+        condition: service_started
+    networks:
+      - backend
+             
 networks:
   backend:
     driver: bridge
