@@ -10,9 +10,9 @@
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.boulow</groupId>
-	<artifactId>documents-service</artifactId>
+	<artifactId>document-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>documents-service</name>
+	<name>document-service</name>
 	<description>Document microservice</description>
 	<properties>
 		<java.version>11</java.version>
