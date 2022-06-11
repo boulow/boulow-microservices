@@ -5,6 +5,8 @@ psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-E
 	DROP DATABASE IF EXISTS boulow_dev;
     CREATE DATABASE boulow_user_dev;
 	CREATE DATABASE boulow_account_dev;
+	CREATE DATABASE boulow_document_dev;
 	GRANT ALL PRIVILEGES ON DATABASE boulow_user_dev TO "$POSTGRES_USER";
 	GRANT ALL PRIVILEGES ON DATABASE boulow_account_dev TO "$POSTGRES_USER";
+	GRANT ALL PRIVILEGES ON DATABASE boulow_document_dev TO "$POSTGRES_USER";
 EOSQL
