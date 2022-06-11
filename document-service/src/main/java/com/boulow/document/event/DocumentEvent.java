@@ -1,7 +1,5 @@
 package com.boulow.document.event;
 
-import java.io.File;
-
 import com.boulow.document.model.DocumentType;
 
 import lombok.AllArgsConstructor;
@@ -17,7 +15,7 @@ public class DocumentEvent {
 	private Long memberId;
 	private Long tribeId;
 	private DocumentType type;
-	private File content;
+	private byte[] content;
 	private String name;
 	private String resourceUri;
 	private Long userId;

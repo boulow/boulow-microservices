@@ -19,7 +19,7 @@ import com.boulow.document.model.DocumentStatus;
 import com.boulow.document.model.DocumentType;
 import com.boulow.document.model.dto.DocumentDto;
 import com.boulow.document.repository.DocumentRepository;
-import com.boulow.document.security.utils.FileUtils;
+import com.boulow.document.security.utils.DocUtils;
 import com.boulow.document.security.utils.UserContext;
 import com.boulow.document.security.utils.UserContextHolder;
 import com.boulow.document.service.client.TribeFeignClient;
@@ -48,7 +48,7 @@ public class DocumentService {
 	private DocumentMapper docMapper;
 	
 	@Autowired
-	private FileUtils fileUtils;
+	private DocUtils docUtils;
 	
 	@Autowired
 	private TribeFeignClient tribeFeignClient;
@@ -60,7 +60,7 @@ public class DocumentService {
 	
 	public Document saveDocEvent(DocumentEvent doc) {
 		Document myDoc = docMapper.convertFromEvent(doc);
-		return uploadToCloud(doc.getContent(), myDoc, doc.getType());
+		return uploadToCloud(docUtils.convertToFile(doc.getContent(), doc.getName()), myDoc, doc.getType());
 	}
 	
 	public Document uploadToCloud(File file, Document doc, DocumentType type) {
@@ -76,7 +76,7 @@ public class DocumentService {
 	public Document saveDoc(DocumentDto doc) {
 		if(doc.getContent() != null && checkMembershipId(doc.getMemberId()) && checkTribeId(doc.getTribeId())) {
 			Document myDoc = docMapper.convertFromDto(doc);
-			return uploadToCloud(fileUtils.convertMultiPartToFile(doc.getContent()), myDoc, doc.getType());
+			return uploadToCloud(docUtils.convertMultiPartToFile(doc.getContent()), myDoc, doc.getType());
 		} else
 			throw new UnauthorizedException("Invalid Tribe or Member");
 	}

@@ -16,7 +16,7 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.boulow.document.config.BoulowProperties;
 import com.boulow.document.model.DocumentType;
-import com.boulow.document.security.utils.FileUtils;
+import com.boulow.document.security.utils.DocUtils;
 
 @Service("fileStorage-service")
 public class FileStorageService {
@@ -27,7 +27,7 @@ public class FileStorageService {
     private AmazonS3 s3client;
     
     @Autowired
-    private FileUtils fileUtils;
+    private DocUtils docUtils;
     
     @Autowired
     BoulowProperties boulowProperties;
@@ -36,7 +36,7 @@ public class FileStorageService {
     public String uploadFile(File file, DocumentType type) {
     	String fileUrl = "";
     	try {
-            String fileName = fileUtils.getDestinationFolder(type) + "/" + fileUtils.generateResourceName(file.getName());
+            String fileName = docUtils.getDestinationFolder(type) + "/" + docUtils.generateResourceName(file.getName());
             s3client.putObject(new PutObjectRequest(boulowProperties.getAmazonS3Props().getBucketName(), fileName, file)
                     .withCannedAcl(CannedAccessControlList.PublicRead));
             fileUrl = generateObjectUrl(fileName);
