@@ -155,7 +155,27 @@ services:
         condition: service_started
     networks:
       - backend
-             
+  documentservice:
+    image: boulow/document-service:0.0.1-SNAPSHOT
+    ports:
+      - "8086:8086"
+    environment:
+      PROFILE: "dev"
+      SPRING_CLOUD_CONFIG_URI: "http://configserver:8071"
+      CONFIGSERVER_PORT:   "8071"
+      DATABASESERVER_PORT: "5432"
+      AWS_API_ACCESS_KEY: "${AWS_API_ACCESS_KEY}"
+      AWS_API_SECRET_KEY: "${AWS_API_SECRET_KEY}"
+    depends_on:
+      database:
+        condition: service_healthy
+      configserver:
+        condition: service_started
+      kafkaserver:
+        condition: service_started
+    networks:
+      - backend
+
 networks:
   backend:
     driver: bridge
