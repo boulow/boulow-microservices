@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +16,9 @@ import com.boulow.document.config.BoulowProperties;
 import com.boulow.document.model.DocumentType;
 
 @Component
-public class FileUtils {
+public class DocUtils {
 	
-	static final Logger log = LoggerFactory.getLogger(FileUtils.class);
+	static final Logger log = LoggerFactory.getLogger(DocUtils.class);
 
 	@Autowired
 	BoulowProperties boulowProperties;
@@ -69,6 +70,17 @@ public class FileUtils {
         }
         return file;
     }
+	
+	public File convertToFile(byte[] bytes, String name) {
+		File temp = new File(name);
+		try {
+			FileUtils.writeByteArrayToFile(temp, bytes);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return temp;
+	}
 
 	public String generateResourceName(String name) {
 		return new Date().getTime() + "-" + name.replace(" ", "_");

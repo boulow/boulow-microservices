@@ -79,7 +79,7 @@ public class UserService {
 				log.info("Publishing user avatar upload event to queue");
 				Document avatar = new Document();
 				try {
-					avatar.setContent(pubService.multipartToFile(toUser.getAvatar(), toUser.getAvatar().getName()));
+					avatar.setContent(toUser.getAvatar().getBytes());
 				} catch (IllegalStateException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
