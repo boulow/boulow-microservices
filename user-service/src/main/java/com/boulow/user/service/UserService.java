@@ -32,13 +32,17 @@ public class UserService {
 	private UserRepository userRepository;
 	
 	@Autowired
-	private DocUploadPubService pubService;
+	private EventPublisherService pubService;
 	
 	private static final Logger log = LoggerFactory.getLogger(UserService.class);
 	
 	public AppUser findById(Long userId, Locale locale) {
 		return userRepository.findById(userId).orElseThrow(() -> new CustomException(
 				String.format(messages.getMessage("user.invalid.argument", null, locale))));
+	}
+	
+	public void updateAvatarUrl(Long userId, String avatarUrl) {
+		userRepository.updateUserAvatarUrl(userId, avatarUrl);
 	}
 	
 	public List<AppUser> findAll() {

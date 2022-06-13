@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.boulow.document.event.DocumentEvent;
+import com.boulow.document.model.Document;
 
 import lombok.AllArgsConstructor;
 
@@ -20,10 +21,15 @@ public class AvatarEventConsumer implements Consumer<DocumentEvent> {
 	@Autowired
 	private DocumentService docService;
 	
+	@Autowired
+	private EventPublisherService pubService;
+	
 	@Override
 	public void accept(DocumentEvent doc) {
 		logger.info("Uploading Avatar *******");
-		docService.saveDocEvent(doc);
+		Document temp = docService.saveDocEvent(doc);
+		logger.info("Notify user service upon successfully uploading doc to AWS *******");
+		pubService.updateUserAvatarUrl(temp);
 		
 	}
 
