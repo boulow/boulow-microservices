@@ -1,9 +1,14 @@
 spring:
   application:
     name: config-server
-  profiles:
-    active:
-    - git
+
+server:
+  port: 8071
+  
+---
+
+spring:
+  profiles: prod
   cloud:
     config:
       server:
@@ -12,6 +17,15 @@ spring:
           default-label: main
           clone-on-start: true
           skip-ssl-validation: true
-          
-server:
-  port: 8071
+
+---
+
+spring:
+  profiles:
+    active: composite
+  cloud:
+    config:
+      server:
+        composite:
+        - type: native
+          search-locations: file:///app/boulow-config

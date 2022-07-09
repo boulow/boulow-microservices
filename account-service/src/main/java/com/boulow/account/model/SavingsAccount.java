@@ -18,11 +18,7 @@ import lombok.ToString;
 public class SavingsAccount extends Account {
 	public SavingsAccount() {
 		super("SAV-");
-		this.currentBalance = new BigDecimal("0");
 	}
-
-	@JsonProperty
-	private BigDecimal currentBalance;
 	
 	@JsonProperty
 	private float interestRate;

@@ -1,4 +1,4 @@
-package com.boulow.account.model;
+package com.boulow.payment.model;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -8,7 +8,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -27,8 +26,8 @@ public class Payment {
 	@JsonProperty
 	private long id;
 	
-	@ManyToOne
-	private Account account;
+	@JsonProperty
+	private long acctId;
 	
 	@JsonProperty
 	private BigDecimal availableBal = new BigDecimal("0");

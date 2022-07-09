@@ -3,6 +3,10 @@ package com.boulow.tribe.model;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -60,6 +64,20 @@ public class Tribe {
 	    )
 	private List<Member> members = new ArrayList<>();
 	
+	@OneToMany(
+	        mappedBy = "tribe",
+	        cascade = CascadeType.ALL,
+	        orphanRemoval = true,
+	        fetch = FetchType.LAZY
+	    )
+	private List<Investment> investments = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "tribe",
+	        cascade = CascadeType.ALL,
+	        orphanRemoval = true,
+	        fetch = FetchType.LAZY)
+	private Set<TribeParameter> params;
+	
 	@JsonProperty
 	@Enumerated(EnumType.ORDINAL)
     private Visibility visibility;
@@ -71,6 +89,10 @@ public class Tribe {
 	@JsonProperty
 	@Column(length = 30)
 	private String acctNum;
+	
+	@JsonProperty
+	@Column(length = 20)
+	private String phoneNumber;
 	
 	@JsonProperty
 	@Column(length = 15)
@@ -92,6 +114,20 @@ public class Tribe {
     	this.membersCnt--;
     }
     
+    public void addInvestment(Investment investment) {
+    	investments.add(investment);
+		investment.setTribe(this);
+    }
+ 
+    public void removeInvestment(Investment investment) {
+    	investments.remove(investment);
+    	investment.setTribe(null);
+    }
     
+    public void addParams(TribeParameter... parameters) {
+    	for(TribeParameter param: parameters)
+    		param.setTribe(this);
+    	this.params = Stream.of(parameters).collect(Collectors.toSet());
+    }
 
 }

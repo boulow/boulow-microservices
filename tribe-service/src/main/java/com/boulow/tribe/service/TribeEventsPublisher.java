@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 
+import com.boulow.tribe.event.AccountEvent;
 import com.boulow.tribe.event.TribeEvent;
 
 @Service
@@ -19,6 +20,11 @@ public class TribeEventsPublisher {
 	public void publishNewTribeEvent(TribeEvent event) {
 		log.info("Publish New Tribe event to newTribe-out-0");
 		streamBridge.send("newTribe-out-0", event);
+	}
+	
+	public void publishNewInvestmentAccount(AccountEvent event) {
+		log.info("Publish new investment account event to account-out-0");
+		streamBridge.send("account-out-0", event);
 	}
 
 }

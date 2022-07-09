@@ -39,6 +39,7 @@ public class Account {
 	public Account(String type) {
 		super();
 		this.availableBalance = new BigDecimal("0");
+		this.currentBalance = new BigDecimal("0");
 		this.accountNumber = type + this.generateAccountNum();
 		this.state = AccountState.OPEN;
 	}
@@ -49,12 +50,18 @@ public class Account {
 	private long id;
 	
 	@JsonProperty
+	private Long tribeId;
+	
+	@JsonProperty
 	private long membershipId;
 	
 	public static SimpleDateFormat dft = new SimpleDateFormat("yyMMddhhmmssMs");
 	
 	@JsonProperty
 	private BigDecimal availableBalance;
+	
+	@JsonProperty
+	private BigDecimal currentBalance;
 	
 	@JsonProperty
 	@Column(length = 50)
@@ -82,25 +89,7 @@ public class Account {
 	        orphanRemoval = true,
 	        fetch = FetchType.LAZY
 	    )
-	private List<Payment> payments = new ArrayList<>();
-	
-	@OneToMany(
-	        mappedBy = "account",
-	        cascade = CascadeType.ALL,
-	        orphanRemoval = true,
-	        fetch = FetchType.LAZY
-	    )
 	private List<Transaction> transactions = new ArrayList<>();
-	
-	public void addPayment(Payment payment) {
-		payments.add(payment);
-		payment.setAccount(this);
-    }
- 
-    public void removePayment(Payment payment) {
-    	payments.remove(payment);
-    	payment.setAccount(null);
-    }
     
     public void addTransaction(Transaction transaction) {
     	transactions.add(transaction);

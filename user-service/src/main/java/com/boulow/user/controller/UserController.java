@@ -28,7 +28,7 @@ import com.boulow.user.model.dto.UserUpdateDto;
 import com.boulow.user.service.UserService;
 
 @RestController
-@RequestMapping(value = "v1/user")
+@RequestMapping(value = "v1/usr")
 public class UserController {
 	
 	private static final Logger log = LoggerFactory.getLogger(UserController.class);
