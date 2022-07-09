@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 
 import com.boulow.account.model.AccountState;
-import com.boulow.account.model.Payment;
 import com.boulow.account.model.Transaction;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -24,8 +23,6 @@ public class AccountDto {
 	private Date closeDate;
 	private Date nextStmt;
     private AccountState state;
-    @JsonIgnore
-	private List<Payment> payments;
     @JsonIgnore
 	private List<Transaction> transactions;
 	private BigDecimal currentBalance;

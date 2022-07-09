@@ -11,6 +11,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.boulow.tribe.model.Investment;
 import com.boulow.tribe.model.Member;
 import com.boulow.tribe.model.MemberRole;
 import com.boulow.tribe.model.Tribe;
@@ -26,6 +27,8 @@ import io.github.resilience4j.bulkhead.annotation.Bulkhead.Type;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 
+import com.boulow.tribe.event.AccountEvent;
+import com.boulow.tribe.event.AccountEventType;
 import com.boulow.tribe.event.TribeEvent;
 import com.boulow.tribe.exception.InvalidArgumentException;
 import com.boulow.tribe.exception.NoSuchElementFoundException;
@@ -73,6 +76,14 @@ public class TribeService {
 		List<Tribe> tribesList = new ArrayList<>();
 		memberRepository.findByUserId(userId).forEach(member -> tribesList.add(member.getTribe()));
 		return tribesList;
+	}
+	
+	public Tribe findByMemberId(Long memberId, Locale locale) {
+		Tribe tribe = tribeRepository.findByMemberId(memberId);
+		if(tribe == null)
+			throw new NoSuchElementFoundException(
+					String.format(messages.getMessage("tribe.absent", null, locale), ""));
+		return tribe;
 	}
 
 	// TODO Implement getTribeMembers(tribeId)
@@ -162,6 +173,25 @@ public class TribeService {
 		tribeRepository.delete(tribe);
 		responseMessage = String.format(messages.getMessage("tribe.delete.message", null, locale), tribeId);
 		return responseMessage;
+	}
+	
+	public Investment invest(Long tribeId, Investment investment, Locale locale) {
+		Tribe tribe = tribeRepository.findById(tribeId).orElseThrow(() -> new NoSuchElementFoundException(
+				String.format(messages.getMessage("tribe.absent", null, locale), tribeId)));
+		tribe.addInvestment(investment);
+		tribeRepository.save(tribe);
+		List<Investment> investments = tribe.getInvestments();
+		investment = investments.get(investments.size() - 1);
+		
+		// Publish new investment account event
+		AccountEvent acctEvent = new AccountEvent();
+		acctEvent.setCorrelationId(UserContext.getCorrelationId());
+		acctEvent.setTribeId(tribeId);
+		acctEvent.setInvestmentId(investment.getId());
+		acctEvent.setType(AccountEventType.CREATE);
+		eventPublisher.publishNewInvestmentAccount(acctEvent);
+		
+		return investment;
 	}
 	
 	@CircuitBreaker(name = "userService")

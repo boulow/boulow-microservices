@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.boulow.tribe.service.MembershipService;
 
 @RestController
-@RequestMapping(value = "v1/membership")
+@RequestMapping(value = "v1/mtg/mbr")
 public class MembershipController {
 
 	static final Logger logger = LoggerFactory.getLogger(MembershipController.class);

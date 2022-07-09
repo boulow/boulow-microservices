@@ -10,6 +10,6 @@ import com.boulow.tribe.model.dto.UserSlimDto;
 @FeignClient("user-service")
 public interface UserFeignClient {
 
-	@GetMapping(value = "/v1/user/{userId}", consumes = "application/json")
+	@GetMapping(value = "/v1/usr/{userId}", consumes = "application/json")
 	UserSlimDto getUser(@PathVariable("userId") Long userId, @RequestHeader("Authorization") String token);
 }

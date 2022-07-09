@@ -9,16 +9,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.boulow.account.mapper.AccountMapper;
 import com.boulow.account.model.dto.AccountDto;
+import com.boulow.account.model.dto.TransactionDto;
 import com.boulow.account.service.AccountService;
 
 @RestController
-@RequestMapping(value = "v1/account")
+@RequestMapping(value = "v1/acct")
 public class AccountController {
 
 	@Autowired
@@ -35,5 +38,27 @@ public class AccountController {
 		return ResponseEntity.ok(accountService.findAll(locale).stream()
 				.map(account -> accountMapper.convertToDto(account)).collect(Collectors.toList()));
 	}
-
+	
+	@PostMapping(value = "/transact")
+	public ResponseEntity<TransactionDto> transact(@RequestHeader(value = "Accept-Language", required = false) Locale locale, @RequestBody TransactionDto transactionDto) {
+		logger.info(transactionDto.toString());
+		switch (transactionDto.getType()) {
+		case DEPOSIT:
+			transactionDto = accountService.deposit(transactionDto, locale);
+			break;
+		case WITHDRAWAL:
+			transactionDto = accountService.withdraw(transactionDto, locale);
+			break;	
+		case TRANSFER:
+			transactionDto = accountService.transfer(transactionDto, locale);
+			break;
+		case REIMBURSMENT:
+			
+			break;
+		default:
+			break;
+		}
+		return ResponseEntity.ok(transactionDto);
+	}
+	
 }

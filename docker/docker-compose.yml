@@ -15,7 +15,7 @@ services:
         aliases:
           - "database"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -40,7 +40,6 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
     depends_on:
       - zookeeper
-    restart: always
     networks:
       backend:
         aliases:
@@ -62,10 +61,20 @@ services:
     image: boulow/configserver:0.0.1-SNAPSHOT
     ports:
       - "8071:8071"
+    environment:
+      SPRING_PROFILES_ACTIVE: "composite"
+    volumes:
+      - ./../../boulow-config/:/app/boulow-config/
     networks:
       backend:
         aliases:
           - "configserver"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --fail http://configserver:8071/actuator/health || exit 1" ]
+      interval: 10s
+      retries: 5
+      start_period: 20s
+      timeout: 10s
   eurekaserver:
     image: boulow/eurekaserver:0.0.1-SNAPSHOT
     ports:
@@ -74,7 +83,7 @@ services:
       database:
         condition: service_healthy
       configserver:
-        condition: service_started  
+        condition: service_healthy
     networks:
       backend:
         aliases:
@@ -94,8 +103,10 @@ services:
       database:
         condition: service_healthy
       configserver:
-        condition: service_started
+        condition: service_healthy
       eurekaserver:
+        condition: service_started
+      kafkaserver:
         condition: service_started
     networks:
       backend:
@@ -108,14 +119,10 @@ services:
     environment:
       PROFILE: "dev"
       SPRING_CLOUD_CONFIG_URI: "http://configserver:8071"
-      CONFIGSERVER_PORT:   "8071"
+      CONFIGSERVER_PORT: "8071"
       DATABASESERVER_PORT: "5432"
     depends_on:
-      database:
-        condition: service_healthy
-      configserver:
-        condition: service_started
-      kafkaserver:
+      gatewayserver:
         condition: service_started
     networks:
       - backend
@@ -126,14 +133,10 @@ services:
     environment:
       PROFILE: "dev"
       SPRING_CLOUD_CONFIG_URI: "http://configserver:8071"
-      CONFIGSERVER_PORT:   "8071"
+      CONFIGSERVER_PORT: "8071"
       DATABASESERVER_PORT: "5432"
     depends_on:
-      database:
-        condition: service_healthy
-      configserver:
-        condition: service_started
-      kafkaserver:
+      gatewayserver:
         condition: service_started
     networks:
       - backend
@@ -144,14 +147,10 @@ services:
     environment:
       PROFILE: "dev"
       SPRING_CLOUD_CONFIG_URI: "http://configserver:8071"
-      CONFIGSERVER_PORT:   "8071"
+      CONFIGSERVER_PORT: "8071"
       DATABASESERVER_PORT: "5432"
     depends_on:
-      database:
-        condition: service_healthy
-      configserver:
-        condition: service_started
-      kafkaserver:
+      gatewayserver:
         condition: service_started
     networks:
       - backend
@@ -162,16 +161,12 @@ services:
     environment:
       PROFILE: "dev"
       SPRING_CLOUD_CONFIG_URI: "http://configserver:8071"
-      CONFIGSERVER_PORT:   "8071"
+      CONFIGSERVER_PORT: "8071"
       DATABASESERVER_PORT: "5432"
       AWS_API_ACCESS_KEY: "${AWS_API_ACCESS_KEY}"
       AWS_API_SECRET_KEY: "${AWS_API_SECRET_KEY}"
     depends_on:
-      database:
-        condition: service_healthy
-      configserver:
-        condition: service_started
-      kafkaserver:
+      gatewayserver:
         condition: service_started
     networks:
       - backend
@@ -179,4 +174,3 @@ services:
 networks:
   backend:
     driver: bridge
-    

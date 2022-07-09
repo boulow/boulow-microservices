@@ -1,4 +1,4 @@
-package com.boulow.account.model;
+package com.boulow.payment.model;
 
 public enum PaymentType {
 
